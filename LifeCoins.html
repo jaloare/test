@@ -1,0 +1,146 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>LifeCoins</title>
+  <style>
+    body {
+      margin: 0;
+      padding: 0;
+      font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      height: 100vh;
+      background: #f0f4f8;
+      overflow: hidden; /* Para que las monedas no sobresalgan */
+      color: #333;
+    }
+    .container {
+      text-align: center;
+      background: #fff;
+      border-radius: 16px;
+      box-shadow: 0 8px 20px rgba(0,0,0,0.15);
+      padding: 20px 15px;
+      max-width: 360px;
+      width: 90%;
+      position: relative;
+      z-index: 1;
+    }
+    .life-coins {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      font-size: 2.2rem;
+      flex-wrap: wrap;
+      z-index: 2;
+    }
+    .label {
+      font-size: 1rem;
+      margin-top: 10px;
+      color: #666;
+    }
+    .message {
+      margin-top: 10px;
+      font-size: 0.95rem;
+      color: #999;
+    }
+    @media (max-width: 400px) {
+      .life-coins {
+        font-size: 1.8rem;
+      }
+    }
+
+    /* ANIMACIÓN DE MONEDAS CAYENDO */
+    .coin {
+      position: absolute;
+      top: -50px;
+      font-size: 1.5rem;
+      animation: fall linear infinite;
+      opacity: 0.8;
+      z-index: 0;
+    }
+    @keyframes fall {
+      0% {
+        transform: translateY(0) rotate(0deg);
+        opacity: 0.8;
+      }
+      100% {
+        transform: translateY(120vh) rotate(360deg);
+        opacity: 0;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h1 style="margin-bottom: 15px;">🪙 LifeCoins</h1>
+    <div class="life-coins" id="life-coins">
+      <!-- Example: 3 🥈 45 🥉 -->
+    </div>
+    <div class="label">hasta las 10:00 PM (UTC-6)</div>
+    <div class="message" id="message">⏳ Contando tus LifeCoins…</div>
+  </div>
+
+  <script>
+    function getCDMXTime() {
+      // Obtiene la hora en CDMX usando Intl.DateTimeFormat
+      const nowUTC = new Date();
+      const options = { timeZone: 'America/Mexico_City', hour: 'numeric', minute: 'numeric', hour12: false };
+      const cdmxTime = new Intl.DateTimeFormat('en-US', options).formatToParts(nowUTC);
+
+      let hours = parseInt(cdmxTime.find(part => part.type === 'hour').value);
+      let minutes = parseInt(cdmxTime.find(part => part.type === 'minute').value);
+
+      return { hours, minutes };
+    }
+
+    function updateLifeCoins() {
+      const { hours, minutes } = getCDMXTime();
+      const currentMinutes = hours * 60 + minutes;
+      const endMinutes = 22 * 60; // 10:00 PM CDMX en minutos
+      const lifeCoinsEl = document.getElementById("life-coins");
+      const messageEl = document.getElementById("message");
+
+      let totalMinutesLeft = endMinutes - currentMinutes;
+
+      if (totalMinutesLeft <= 0) {
+        lifeCoinsEl.innerHTML = `0 🥈 0 🥉`;
+        messageEl.textContent = "💤 Tiempo agotado – invierte en descansar";
+      } else {
+        let hoursLeft = Math.floor(totalMinutesLeft / 60);
+        let minutesLeft = totalMinutesLeft % 60;
+
+        lifeCoinsEl.innerHTML = `
+          ${hoursLeft} 🥈 ${minutesLeft} 🥉
+        `;
+        messageEl.textContent = "⏳ Contando tus LifeCoins…";
+      }
+    }
+
+    // Crear monedas cayendo
+    function createFallingCoins() {
+      const body = document.querySelector("body");
+      const coinTypes = ["🥈", "🥉"];
+      setInterval(() => {
+        const coin = document.createElement("div");
+        coin.classList.add("coin");
+        coin.style.left = Math.random() * 100 + "vw";
+        coin.style.animationDuration = (Math.random() * 3 + 2) + "s";
+        coin.innerText = coinTypes[Math.floor(Math.random() * coinTypes.length)];
+        body.appendChild(coin);
+
+        // Eliminar la moneda después de caer
+        setTimeout(() => {
+          coin.remove();
+        }, 5000);
+      }, 500); // cada 0.5 segundos aparece una nueva moneda
+    }
+
+    updateLifeCoins();
+    setInterval(updateLifeCoins, 60000); // Actualiza cada minuto
+    createFallingCoins();
+  </script>
+</body>
+</html>
