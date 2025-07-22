@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>🪙 LifeCoins</title>
+  <style>
+    html, body {
+      margin: 0;
+      padding: 0;
+      font-family: sans-serif;
+      background: #fdfdfd;
+      color: #333;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      height: 100%;
+      width: 100%;
+    }
+    .container {
+      text-align: center;
+      padding: 10px;
+      border: 1px solid #ddd;
+      border-radius: 8px;
+      background: #fff;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+      width: 90%;
+      max-width: 400px;
+    }
+    .value {
+      font-size: 2rem;
+      font-weight: bold;
+    }
+    .msg {
+      font-size: 0.95rem;
+      margin-top: 5px;
+      color: #666;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <div id="lifecoins-value" class="value">🪙 ...</div>
+    <div id="lifecoins-msg" class="msg">⏳ Contando tus LifeCoins…</div>
+  </div>
+  <script>
+    function updateLifeCoins(){
+      const now = new Date();
+      const h = now.getHours();
+      const m = now.getMinutes();
+      const total = (22*60) - (h*60 + m);
+      const valueEl = document.getElementById("lifecoins-value");
+      const msgEl = document.getElementById("lifecoins-msg");
+      if(total <= 0){
+        valueEl.textContent = "💤 Tiempo agotado";
+        msgEl.textContent = "";
+      }else{
+        const hrs = Math.floor(total / 60);
+        const mins = total % 60;
+        valueEl.textContent = `🪙 ${hrs} 🥈 ${mins} 🥉`;
+        msgEl.textContent = "⏳ Contando tus LifeCoins hasta las 10:00 PM…";
+      }
+    }
+    updateLifeCoins();
+    setInterval(updateLifeCoins, 60000);
+  </script>
+</body>
+</html>
