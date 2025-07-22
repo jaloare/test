@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>LifeCoins</title>
+  <title>🪙 LifeCoins</title>
   <style>
     :root {
       --bg-color: #f0f4f8;
@@ -107,27 +107,17 @@
     <div class="life-coins" id="life-coins">
       <!-- Example: 3 🥈 45 🥉 -->
     </div>
-    <div class="label">hasta las 10:00 PM (UTC-6)</div>
+    <div class="label">hora local (según tu dispositivo)</div>
     <div class="message" id="message">⏳ Contando tus LifeCoins…</div>
   </div>
 
   <script>
-    function getCDMXTime() {
-      // Obtiene la hora en CDMX usando Intl.DateTimeFormat
-      const nowUTC = new Date();
-      const options = { timeZone: 'America/Mexico_City', hour: 'numeric', minute: 'numeric', hour12: false };
-      const cdmxTime = new Intl.DateTimeFormat('en-US', options).formatToParts(nowUTC);
-
-      let hours = parseInt(cdmxTime.find(part => part.type === 'hour').value);
-      let minutes = parseInt(cdmxTime.find(part => part.type === 'minute').value);
-
-      return { hours, minutes };
-    }
-
     function updateLifeCoins() {
-      const { hours, minutes } = getCDMXTime();
+      const now = new Date();
+      const hours = now.getHours();
+      const minutes = now.getMinutes();
       const currentMinutes = hours * 60 + minutes;
-      const endMinutes = 22 * 60; // 10:00 PM CDMX en minutos
+      const endMinutes = 22 * 60; // 10:00 PM en minutos
       const lifeCoinsEl = document.getElementById("life-coins");
       const messageEl = document.getElementById("message");
 
@@ -136,6 +126,7 @@
       if (totalMinutesLeft <= 0) {
         lifeCoinsEl.innerHTML = `0 🥈 0 🥉`;
         messageEl.textContent = "💤 Tiempo agotado – invierte en descansar";
+        document.title = "💤 Tiempo agotado - LifeCoins";
       } else {
         let hoursLeft = Math.floor(totalMinutesLeft / 60);
         let minutesLeft = totalMinutesLeft % 60;
@@ -143,9 +134,21 @@
         lifeCoinsEl.innerHTML = `
           ${hoursLeft} 🥈 ${minutesLeft} 🥉
         `;
-        messageEl.textContent = "⏳ Contando tus LifeCoins…";
+        messageEl.textContent = "⏳ Contando tus LifeCoins hasta las 10:00 PM…";
+        document.title = `🪙 ${hoursLeft} 🥈 ${minutesLeft} 🥉 - LifeCoins`;
       }
     }
+
+    // Dark Mode Toggle
+    const toggleBtn = document.getElementById("toggleDark");
+    toggleBtn.addEventListener("click", () => {
+      document.body.classList.toggle("dark");
+      if (document.body.classList.contains("dark")) {
+        toggleBtn.textContent = "☀️";
+      } else {
+        toggleBtn.textContent = "🌙";
+      }
+    });
 
     // Crear monedas cayendo
     function createFallingCoins() {
@@ -165,17 +168,6 @@
         }, 5000);
       }, 500); // cada 0.5 segundos aparece una nueva moneda
     }
-
-    // Dark Mode Toggle
-    const toggleBtn = document.getElementById("toggleDark");
-    toggleBtn.addEventListener("click", () => {
-      document.body.classList.toggle("dark");
-      if (document.body.classList.contains("dark")) {
-        toggleBtn.textContent = "☀️";
-      } else {
-        toggleBtn.textContent = "🌙";
-      }
-    });
 
     updateLifeCoins();
     setInterval(updateLifeCoins, 60000); // Actualiza cada minuto
